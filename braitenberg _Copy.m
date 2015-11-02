@@ -17,8 +17,7 @@ close all
 clc
 
 %% Parameters
-% p_ls1 = [1;1];  %position light source
-p_ls1 = [-20:20;repmat(2,41,1)']; %Making a wall
+p_ls1 = [1;1];  %position light source
 l_s = 0.1;      %shaft length vehicle
 r_w = 0.02;     %radius wheel
 d_s = 0.1;      %sensor distance
@@ -51,56 +50,28 @@ lli1 = line(0,0,'color',[0.7 0.7 0],'Marker','.','MarkerSize',30);  %light sourc
 
 %% Simulation
 set(lli1,'xdata',p_ls1(1),'ydata',p_ls1(2))
-axis([-20 20 -20 20])
+axis([0 2 0 2])
 
 t = 0:dt:N;
 for i = 1:N
     
-    %Need to calculate distance from line (wall) to point:    
-%       Let Q1 and Q2 be endpoints (or any two distinct points) of the line segment 
-%       and P the point in question, then
-%               d = abs(cross(Q2-Q1,P-Q1))/abs(Q2-Q1);
-    
-%     r_ls1 = norm(p_s1-p_ls1); %Left sensor to light source
-%     r_rs1 = norm(p_s2-p_ls1); %Right sensor to light source
+    r_ls1 = norm(p_s1-p_ls1);
+    r_rs1 = norm(p_s2-p_ls1);
 
-%Left
-    Q2 = [p_ls1(:,size(p_ls1,2));0];
-    Q1 = [p_ls1(:,1);0];
-    P =  [p_s1;0];
-    r_ls1 = norm(cross(Q2-Q1,P-Q1))/norm(Q2-Q1);
-    
- %Right
-    P =  [p_s2;0];
-    r_rs1 = norm(cross(Q2-Q1,P-Q1))/norm(Q2-Q1);
-    
-%     omega_l = 1/r_ls1^2*rho - 1/(1.8*r_ls1)^3*rho;
-%     omega_r = 1/r_rs1^2*rho - 1/(1.8*r_rs1)^3*rho;
-
-%Obstacle Avoidance_Manoj (Changed omega_l/omega_r/dphi)
-    omega_l = 1/r_ls1^2*rho +1;
-    omega_r = 1/r_rs1^2*rho +1;
-
-    if(omega_l-omega_r<1) %If its heading to a straight wall
-        flip = rand(1,1)*10; %Random number to decide to turn left or right
-        if(flip>5)
-            omega_r = omega_r+3; %Turn left
-        else
-            omega_l = omega_l+3; %Turn right
-        end
-    end
+    omega_l = 1/r_ls1^2*rho - 1/(1.8*r_ls1)^3*rho;
+    omega_r = 1/r_rs1^2*rho - 1/(1.8*r_rs1)^3*rho;
 
     v_c = (omega_l*r_w + omega_r*r_w)/2;
-    dphi = (omega_r*r_w - omega_l*r_w)/2/(l_s/2); %Remove minus sign to switch polarity
+    dphi = -(omega_r*r_w - omega_l*r_w)/2/(l_s/2); %Remove minus sign to switch polarity
             
     if i>1
         p_c(:,i) = p_c(:,i-1) + [v_c*cos(p_c(3,i-1));v_c*sin(p_c(3,i-1));dphi]*dt;
         p_s1 = p_c(1:2,i) + l_s/2*[cos(p_c(3,i));sin(p_c(3,i))] + d_s/2*[-sin(p_c(3,i));cos(p_c(3,i))];
         p_s2 = p_c(1:2,i) + l_s/2*[cos(p_c(3,i));sin(p_c(3,i))] + d_s/2*[sin(p_c(3,i));-cos(p_c(3,i))];
-%         p_ls1 = [0.5*sin(t(i)/5)+1;0.5*cos(t(i)/5)+1];
-%         p_ls1 = [-20:20;repmat(10,41,1)'];
+        p_ls1 = [0.5*sin(t(i)/5)+1;0.5*cos(t(i)/5)+1];
     end
 end
+
 
 p_c_old = p_c(:,1);
 t_next = 0;   %variable for timing of frame capture
@@ -127,12 +98,9 @@ while toc < t(end)
         p_s1 = p_c(1:2,idx) + l_s/2*[cos(p_c(3,idx));sin(p_c(3,idx))] + d_s/2*[-sin(p_c(3,idx));cos(p_c(3,idx))];
         p_s2 = p_c(1:2,idx) + l_s/2*[cos(p_c(3,idx));sin(p_c(3,idx))] + d_s/2*[sin(p_c(3,idx));-cos(p_c(3,idx))];
 
-%         p_ls1 = [0.5*sin(t(idx)/5)+1;0.5*cos(t(idx)/5)+1];
-        p_ls1 = [-20:20;repmat(2,41,1)']; %Making a wall
-
-
+        p_ls1 = [0.5*sin(t(idx)/5)+1;0.5*cos(t(idx)/5)+1];
+        
         plot([p_c(1,idx);p_c_old(1)],[p_c(2,idx);p_c_old(2)])
-        grid on;
 
         set(ll,'xdata',[r_c1(1) r_c2(1)],'ydata',[r_c1(2) r_c2(2)])
         set(lf,'xdata',[r_c2(1) r_c3(1)],'ydata',[r_c2(2) r_c3(2)])

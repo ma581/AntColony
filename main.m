@@ -12,8 +12,15 @@
 % ant.RandomMotionGain = 0.1;
 
 
-% maze
-% pheremone
+
+%MAZE STRUCTURE
+% maze.Walls = n by m matrix (boolean)
+% maze.EdgeList = x by 4 matrix of connected points
+% maze.Goal = exit/food position
+
+%PHEREMONE STRUCTURE
+% pher.DecayRate
+% pher.Matrix = n by m matrix with pheremone strengths
 
 
 %Generate maze (JW's function)

@@ -68,11 +68,11 @@ for i = 1:N
     Q2 = [p_ls1(:,size(p_ls1,2));0];
     Q1 = [p_ls1(:,1);0];
     P =  [p_s1;0];
-    r_ls1 = norm(cross(Q2-Q1,P-Q1))/norm(Q2-Q1);
+    r_ls1 = norm(cross(Q2-Q1,P-Q1))/norm(Q2-Q1); %Left sensor to light source
     
  %Right
     P =  [p_s2;0];
-    r_rs1 = norm(cross(Q2-Q1,P-Q1))/norm(Q2-Q1);
+    r_rs1 = norm(cross(Q2-Q1,P-Q1))/norm(Q2-Q1); %Right sensor to light source
     
 %     omega_l = 1/r_ls1^2*rho - 1/(1.8*r_ls1)^3*rho;
 %     omega_r = 1/r_rs1^2*rho - 1/(1.8*r_rs1)^3*rho;

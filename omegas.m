@@ -1,3 +1,5 @@
+% This is OLD and NOT USED
+
 % This will carry out OBSTACLE AVOIDANCE to output the wheel speeds omega_l
 % and omega_R
 % This is the ANT ROBOT CONTROLLER

@@ -4,8 +4,12 @@
 classdef ant
     properties
         %Braitenberg robot properties
-        p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
-        p_c_old = obj.p_c;         %save old state for trajectory
+%         p_c = [0.6;0.6;pi/2]; %initial robot position and orientation
+%         p_c_old = .p_c;   %save old state for trajectory
+  
+        p_c;            %Array to store x,y,theta position
+        p_c_old;
+        p_c_prev;       %Previous position
         rho = 10;       %light intensity to rotational speed constant
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
@@ -13,6 +17,7 @@ classdef ant
         
         % Additional properties
         randomMotionGain = 0.1; % Gain for random motion
+        testValue = zeros(1,2);
     end
     
     methods
@@ -74,8 +79,24 @@ classdef ant
             if timestep>1
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
-                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
+%                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + ...
+%                     [v_c*cos(obj.p_c(3,timestep-1));...
+%                     v_c*sin(obj.p_c(3,timestep-1));...
+%                     dphi]*obj.dt;
+                obj.p_c(:,1) = obj.p_c_prv(:,1) + ...
+                    [v_c*cos(obj.p_c_prv(3,1));...
+                    v_c*sin(obj.p_c_prev(3,1));...
+                    dphi]*obj.dt;
             end
+        end
+        
+        function obj = initialPosition(obj,position)
+            %         p_c = [0.6;0.6;pi/2]; %initial robot position and orientation
+
+            obj.p_c = position;
+            obj.p_c_old = position;
+            obj.p_c_prev = position;
+            obj.testValue(2) = 1;
         end
     end
 end

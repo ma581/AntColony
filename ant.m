@@ -1,15 +1,12 @@
 % This defines the properties of an ANT and its CONTROLLER
 % MA Kurien (ma581)
 
-classdef ant
+classdef ant < handle
     properties
-        %Braitenberg robot properties
-%         p_c = [0.6;0.6;pi/2]; %initial robot position and orientation
-%         p_c_old = .p_c;   %save old state for trajectory
-  
+        %Braitenberg robot properties  
         p_c;            %Array to store x,y,theta position
-        p_c_old;
-        p_c_prev;       %Previous position
+        p_c_old;        %save old state for trajectory
+        p_c_prev;       %Previous position (UNUSED)
         rho = 10;       %light intensity to rotational speed constant
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
@@ -17,7 +14,7 @@ classdef ant
         
         % Additional properties
         randomMotionGain = 0.1; % Gain for random motion
-        testValue = zeros(1,2);
+%         testValue = zeros(1,2);
     end
     
     methods
@@ -35,11 +32,14 @@ classdef ant
             if timestep>1
                 y = round(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
                 x = round(obj.p_c(2,timestep-1))+1;
+%                 y = round(obj.p_c(1,1))+1; % +1 to account for indexing starting at 1
+%                 x = round(obj.p_c(2,1))+1;
+
             else
                 y = round(obj.p_c(1,timestep))+1; % +1 to account for indexing starting at 1
                 x = round(obj.p_c(2,timestep))+1;
             end
-                
+%                 
             %Reading in neighbours in 3x3 grid
             listOfNearbyPot = []; %init
             for i = -1:1
@@ -59,6 +59,7 @@ classdef ant
             else
                 difference = desiredArgDirection - obj.p_c(3,timestep);
             end
+%             difference = desiredArgDirection - obj.p_c(3,1);
             
             if difference>1 % we need to spin left
                 dec_omega_r = (difference*obj.l_s)/obj.r_w;
@@ -79,24 +80,23 @@ classdef ant
             if timestep>1
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
-%                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + ...
-%                     [v_c*cos(obj.p_c(3,timestep-1));...
-%                     v_c*sin(obj.p_c(3,timestep-1));...
-%                     dphi]*obj.dt;
-                obj.p_c(:,1) = obj.p_c_prv(:,1) + ...
-                    [v_c*cos(obj.p_c_prv(3,1));...
-                    v_c*sin(obj.p_c_prev(3,1));...
+                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + ...
+                    [v_c*cos(obj.p_c(3,timestep-1));...
+                    v_c*sin(obj.p_c(3,timestep-1));...
                     dphi]*obj.dt;
+%                 obj.p_c(:,1) = obj.p_c_prev(:,1) + ...
+%                     [v_c*cos(obj.p_c_prev(3,1));...
+%                     v_c*sin(obj.p_c_prev(3,1));...
+%                     dphi]*obj.dt;
             end
         end
         
-        function obj = initialPosition(obj,position)
-            %         p_c = [0.6;0.6;pi/2]; %initial robot position and orientation
-
-            obj.p_c = position;
-            obj.p_c_old = position;
-            obj.p_c_prev = position;
-            obj.testValue(2) = 1;
+        function obj = ant(initPosition)
+            % class constructor
+            obj.p_c = initPosition;
+            obj.p_c_old = initPosition;
+            obj.p_c_prev = initPosition;
+%             obj.testValue(2) = 1;
         end
     end
 end

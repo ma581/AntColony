@@ -29,7 +29,7 @@ N = 13280;
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-ant1 = ant([8;6;0]);
+ant1 = ant([19;19;pi/2]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -57,6 +57,12 @@ axis([0 21 0 21])
 
 [X,Y] = meshgrid(-2:0.2:2,-2:0.2:2);
 Z = X.*exp(-X.^2 - Y.^2);
+%Making edge walls of the plane
+Z(1,:) = 0.5;
+Z(size(Z,1),:) = 0.5;
+Z(:,1) = 0.5;
+Z(:,size(Z,2)) = 0.5;
+
 % figure(2)
 % surface(X,Y,Z)
 % view(3)

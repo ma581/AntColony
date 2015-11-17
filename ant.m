@@ -33,15 +33,15 @@ classdef ant < handle
             
             % Find discrete position (ie the index) 
             if timestep>1
-                index_y = round(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
-                index_x = round(obj.p_c(2,timestep-1))+1;
+                index_y = floor(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
+                index_x = floor(obj.p_c(2,timestep-1))+1;
                 
 %                 y = round(obj.p_c(1,1))+1; % +1 to account for indexing starting at 1
 %                 x = round(obj.p_c(2,1))+1;
 
             else
-                index_y = round(obj.p_c(1,timestep))+1; % +1 to account for indexing starting at 1
-                index_x = round(obj.p_c(2,timestep))+1;
+                index_y = floor(obj.p_c(1,timestep))+1; % +1 to account for indexing starting at 1
+                index_x = floor(obj.p_c(2,timestep))+1;
                 
             end
 %                 
@@ -210,7 +210,7 @@ classdef ant < handle
                                 
             % Update ant position (Braitenberg code)
             if timestep>1
-                timestep
+                timestep;
                 
 
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity

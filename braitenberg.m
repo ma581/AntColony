@@ -24,13 +24,12 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 15000;
+N = 13280;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-ant1 = ant([-1.5;-1.5;pi/2]);
-
+ant1 = ant([8;6;0]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -54,7 +53,7 @@ lli1 = line(0,0,'color',[0.7 0.7 0],'Marker','.','MarkerSize',30);  %light sourc
 
 %% Simulation
 % set(lli1,'xdata',p_ls1(1),'ydata',p_ls1(2))
-axis([-2 5 -2 5])
+axis([0 21 0 21])
 
 [X,Y] = meshgrid(-2:0.2:2,-2:0.2:2);
 Z = X.*exp(-X.^2 - Y.^2);
@@ -67,7 +66,7 @@ for i = 1:N
     
     
         ant1.antController(Z,i);
-
+        
 %     r_ls1 = norm(p_s1-p_ls1);
 %     r_rs1 = norm(p_s2-p_ls1);
 % 
@@ -132,3 +131,4 @@ while toc < t(end)
         ant1.p_c_old = ant1.p_c(:,idx);
     end
 end
+contour(Z); %To plot the surface as well

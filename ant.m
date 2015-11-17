@@ -17,6 +17,7 @@ classdef ant < handle
         % Additional properties
         randomMotionGain = 0.1; % Gain for random motion
 %         testValue = zeros(1,2);
+        straightMotionGain = 5; % Gain to keep driving straight
     end
     
     methods
@@ -32,32 +33,39 @@ classdef ant < handle
             
             % Find discrete position (ie the index) 
             if timestep>1
-                y = round(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
-                x = round(obj.p_c(2,timestep-1))+1;
+                index_y = round(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
+                index_x = round(obj.p_c(2,timestep-1))+1;
+                
 %                 y = round(obj.p_c(1,1))+1; % +1 to account for indexing starting at 1
 %                 x = round(obj.p_c(2,1))+1;
 
             else
-                y = round(obj.p_c(1,timestep))+1; % +1 to account for indexing starting at 1
-                x = round(obj.p_c(2,timestep))+1;
+                index_y = round(obj.p_c(1,timestep))+1; % +1 to account for indexing starting at 1
+                index_x = round(obj.p_c(2,timestep))+1;
+                
             end
 %                 
             %Reading in neighbours in 3x3 grid
             listOfNearbyPot = []; %init
             
             %Considering which of three cases we are in a 3x3 grid
-            if ((x-1)>0 && (x+1)<size(surface,2) && (y-1)>0 && (y+1)<size(surface,1))
+            if ((index_x-1)>0 && (index_x+1)<=size(surface,2) && (index_y-1)>0 && (index_y+1)<=size(surface,1))
                 s = 1;  %Case 1 (middle of 3x3 grid)
-            elseif((y-1)==0 && (x-1)>0 && (x+1)<size(surface,2) ||...
-                    (y+1)>size(surface,1) && (x-1)>0 && (x+1)<size(surface,2) ||...
-                    (x-1)==0 && (y-1)>0 && (y+1)<size(surface,1)||...
-                    (x+1)>size(surface,2) && (y-1)>0 && (y+1)<size(surface,1))
+                %disp('s= 1');
+            elseif((index_y-1)==0 && (index_x-1)>0 && (index_x+1)<size(surface,2) ||...
+                    (index_y+1)>size(surface,1) && (index_x-1)>0 && (index_x+1)<size(surface,2) ||...
+                    (index_x-1)==0 && (index_y-1)>0 && (index_y+1)<size(surface,1)||...
+                    (index_x+1)>size(surface,2) && (index_y-1)>0 && (index_y+1)<size(surface,1))
                 s = 2; %Case 2 (edge of 3x3 grid)
-            elseif((y-1)==0 && (x-1)==0 && (x+1)<size(surface,2) && (y+1)<size(surface,1)||...
-                    (y-1)==0 && (x-1)>0 && (x+1)>size(surface,2) && (y+1)<size(surface,1)||...
-                    (y-1)>0 && (x-1)==0 && (x+1)<size(surface,2) && (y+1)>size(surface,1)||...
-                    (y-1)>0 && (x-1)>0 && (x+1)>size(surface,2) && (y+1)>size(surface,1))
-                s = 3; %Case 3 (corner)
+                %disp('s= 2');
+%             elseif((index_y-1)==0 && (index_x-1)==0 && (index_x+1)<size(surface,2) && (index_y+1)<size(surface,1)||...
+%                     (index_y-1)==0 && (index_x-1)>0 && (index_x+1)>size(surface,2) && (index_y+1)<size(surface,1)||...
+%                     (index_y-1)>0 && (index_x-1)==0 && (index_x+1)<size(surface,2) && (index_y+1)>size(surface,1)||...
+%                     (index_y-1)>0 && (index_x-1)>0 && (index_x+1)>size(surface,2) && (index_y+1)>size(surface,1))
+%                 s = 3; %Case 3 (corner)
+            else
+                s=3;
+                disp('s= 3');
             end
             
             
@@ -66,10 +74,10 @@ classdef ant < handle
             
             switch s
                 case 1 %Case 1 (middle of 3x3 grid)
-                    disp('Case 1');
+                    %disp('Case 1');
                     for i = -1:1
                         for j = -1:1
-                            listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                            listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                         end
                     end
                     
@@ -77,11 +85,11 @@ classdef ant < handle
                     relArgDirections = stepArgDirections; %relevant
                     
                 case 2 %Case 2 (edge of 3x3 grid)
-                    disp('Case 2')
-                    if (x-1)==0 %Middle left
+                    %disp('Case 2')
+                    if (index_x-1)==0 %Middle left
                         for i = -1:1
                             for j = 0:1
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                         end
                         listOfNearbyPot(3) = []; %ignoring current position
@@ -89,10 +97,10 @@ classdef ant < handle
                                             stepArgDirections(5),...
                                             stepArgDirections(7:8)];
                                         
-                    elseif (x+1)>size(surface(2)) %Middle right
+                    elseif (index_x+1)>size(surface,2) %Middle right
                         for i = -1:1
                             for j = -1:0
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                         end
                         listOfNearbyPot(4) = []; %ignoring current position
@@ -100,19 +108,19 @@ classdef ant < handle
                                             stepArgDirections(4),...    
                                             stepArgDirections(6:7)];                                
                                         
-                    elseif (y-1)==0 %Middle top
+                    elseif (index_y-1)==0 %Middle top
                           for i = 0:1
                             for j = -1:1
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                           end
                         listOfNearbyPot(2) = []; %ignoring current position
                         relArgDirections = [stepArgDirections(4:8)];
                           
-                    elseif (y+1)>size(surface(1)) %Middle bottom
+                    elseif (index_y+1)>size(surface,1) %Middle bottom
                           for i = -1:0
                             for j = -1:1
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                           end
                           listOfNearbyPot(5) = []; %ignoring current position
@@ -120,38 +128,38 @@ classdef ant < handle
                     end
   
                 case 3
-                    disp('Case 3')
-                    if ((x-1)==0 && (y-1) ==0 )%Top left
+                    %disp('Case 3')
+                    if ((index_x-1)==0 && (index_y-1) ==0 )%Top left
                          for i = 0:1
                             for j = 0:1
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                          end
                          listOfNearbyPot(1) = []; %ignoring current position 
                          relArgDirections = [stepArgDirections(5),stepArgDirections(7),stepArgDirections(8)];
                     
-                    elseif ((x+1)>size(surface(2))&& (y-1) ==0) %Top right
+                    elseif ((index_x+1)>size(surface,2)&& (index_y-1)==0) %Top right
                         for i = 0:1
                             for j = -1:0
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                         end
                         listOfNearbyPot(2) = []; %ignoring current position 
                         relArgDirections = [stepArgDirections(4),stepArgDirections(6),stepArgDirections(7)];
                     
-                    elseif ((x-1)==0 && (y+1)>size(surface(1))) %Bottom left
+                    elseif ((index_x-1)==0 && (index_y+1)>size(surface,1)) %Bottom left
                         for i = -1:0
                             for j = 0:1
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                         end
                         listOfNearbyPot(3) = []; %ignoring current position 
                         relArgDirections = [stepArgDirections(2),stepArgDirections(3),stepArgDirections(5)];        
                    
-                    elseif ((x+1)>size(surface(2)) && (y+1)>size(surface(1))) %Bottom right
+                    elseif ((index_x+1)>size(surface,2) && (index_y+1)>size(surface,1)) %Bottom right
                         for i = -1:0
                             for j = -1:0
-                                listOfNearbyPot = [listOfNearbyPot;surface(y+i,x+j)];
+                                listOfNearbyPot = [listOfNearbyPot;surface(index_y+i,index_x+j)];
                             end
                         end
                         listOfNearbyPot(4) = []; %ignoring current position 
@@ -160,13 +168,19 @@ classdef ant < handle
                     
                     otherwise
                     disp('other value')
-                end
+            end
             
             
             
-            
+                    % Need to take into account multiple available
+                    % lowestSteps                    
                     lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
-                    desiredArgDirection = relArgDirections(lowestStep);
+                    randomNumbers = rand(size(lowestStep));
+                    randomIndex = find(randomNumbers==min(randomNumbers));
+                    
+                     singleLowestStep = lowestStep(randomIndex); %Picks a random direction 
+%                     desiredArgDirection = relArgDirections(singleLowestStep);
+                    desiredArgDirection = stepArgDirections(singleLowestStep);
 
             
             
@@ -190,18 +204,18 @@ classdef ant < handle
             
             
             % Combining to calculate 
-            omega_l = obj.randomMotionGain * rand_omega_l +  dec_omega_l;
-            omega_r = obj.randomMotionGain * rand_omega_r +  dec_omega_r;      
+            omega_l = obj.randomMotionGain * rand_omega_l +  dec_omega_l + obj.straightMotionGain;
+            omega_r = obj.randomMotionGain * rand_omega_r +  dec_omega_r + obj.straightMotionGain;      
             
                                 
             % Update ant position (Braitenberg code)
             if timestep>1
+                timestep
+                
+
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
-                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + ...
-                    [v_c*cos(obj.p_c(3,timestep-1));...
-                    v_c*sin(obj.p_c(3,timestep-1));...
-                    dphi]*obj.dt;
+                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
 %                 obj.p_c(:,1) = obj.p_c_prev(:,1) + ...
 %                     [v_c*cos(obj.p_c_prev(3,1));...
 %                     v_c*sin(obj.p_c_prev(3,1));...

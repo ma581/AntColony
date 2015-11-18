@@ -16,7 +16,7 @@ classdef ant < handle
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
-        straightMotionGain = 2; % Gain to keep driving straight
+        straightMotionGain = 0; % Gain to keep driving straight
         directionsHeaded;       % For debugging
     end
     

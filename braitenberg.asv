@@ -24,12 +24,12 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 13280;
+N = 50000*2;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-ant1 = ant([20;20;pi/2]);
+ant1 = ant([10;8;pi]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -96,7 +96,7 @@ end
 
 % p_c_old = p_c(:,1);
 t_next = 0;   %variable for timing of frame capture
-RepSpeed = 1; %replay speed
+RepSpeed = 80; %replay speed
 fps = 30;     %frames per second
 tic
 while toc < t(end)
@@ -138,3 +138,4 @@ while toc < t(end)
     end
 end
 contour(Z); %To plot the surface as well
+grid on;

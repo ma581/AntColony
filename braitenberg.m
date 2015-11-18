@@ -24,12 +24,12 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 10000*5;
+N = 30000*5;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-ant1 = ant([11;3;0]);
+ant1 = ant([12;5;0]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -67,6 +67,7 @@ Z(:,size(Z,2)) = 0.5;
 
 % Making a wall
 Z(1:10,10) = 0.5;
+Z(1:10,9) = 0.5;
 Z(1:10,13) = 0.5;
 Z(15,1:10) = 0.5;
 
@@ -146,7 +147,7 @@ tic
 %     end
 % end
 % contour(Z); %To plot the surface as well
-
-plot(ant1.p_c(1,:),ant1.p_c(2,:));
-hold on;
-contour(Z);
+colormap(gray);
+surf(Z);hold on;
+view(2);
+plot3(ant1.p_c(1,:),ant1.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')

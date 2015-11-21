@@ -7,6 +7,7 @@ classdef ant < handle
         p_c;            %Array to store x,y,theta position
         p_c_old;        %save old state for trajectory
         p_c_prev;       %Previous position (UNUSED)
+        p_c_round;      %Rounded position
         rho = 10;       %light intensity to rotational speed constant
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
@@ -269,6 +270,7 @@ relArgDirections = []; % the relevant directions for each case
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
 
                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
+                obj.p_c_round(:,timestep) = round(obj.p_c(:,timestep));
                 %                 obj.p_c(:,1) = obj.p_c_prev(:,1) + ...
                 %                     [v_c*cos(obj.p_c_prev(3,1));...
                 %                     v_c*sin(obj.p_c_prev(3,1));...

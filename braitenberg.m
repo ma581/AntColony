@@ -31,7 +31,7 @@ N = 30000;
 % p_c_old = p_c;      %save old state for trajectory
 ant1 = ant([5;2;pi/2]);
 ant2 = ant([13;8;pi/2]);
-ant3 = ant([13;8;pi/2]);
+ant3 = ant([20;20;pi/2]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -59,7 +59,7 @@ axis([0 21 0 21])
 
 [X,Y] = meshgrid(-2:0.2:2,-2:0.2:2);
 Z = X.*exp(-X.^2 - Y.^2);
-Z = Z.*0;
+% Z = Z.*0;
 %Making edge walls of the plane
 Z(1,:) = 0.5;
 Z(size(Z,1),:) = 0.5;
@@ -83,7 +83,7 @@ Z(5,1:7) = 0.5;
 Z(18:21,6) = 0.5;
 Z(18:21,17) = 0.5;
 Z(18:21,13) = 0.5;
-
+% Z = Z-1000;
 % figure(2)
 % surface(X,Y,Z)
 % view(3)
@@ -119,9 +119,10 @@ end
 
 % p_c_old = p_c(:,1);
 t_next = 0;   %variable for timing of frame capture
-RepSpeed = 500; %replay speed
+RepSpeed = 10; %replay speed
 fps = 30;     %frames per second
 tic
+% surf(Z);view(2);hold on;
 % while toc < t(end)
 %         
 %     % Animation
@@ -160,23 +161,19 @@ tic
 %         ant1.p_c_old = ant1.p_c(:,idx);
 %     end
 % end
-contour(Z); %To plot the surface as well
-figure;
+% contour(Z); %To plot the surface as well
+figure; subplot(1,2,1)
 colormap(gray);
 surf(Z);hold on;
 view(2);
-plot3(ant1.p_c(1,:),ant1.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')
-plot3(ant2.p_c(1,:),ant2.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'b')
-plot3(ant3.p_c(1,:),ant3.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'g')
-
-
-
-figure;
-colormap(gray);
+plot3(ant1.p_c(1,:),ant1.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'r')
+plot3(ant2.p_c(1,:),ant2.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'b')
+plot3(ant3.p_c(1,:),ant3.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'g')
+subplot(1,2,2)
 surf(Z);hold on;
 view(2);
-plot3(ant1.p_c_round(1,:),ant1.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')
-plot3(ant2.p_c_round(1,:),ant2.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'b')
-plot3(ant3.p_c_round(1,:),ant3.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'g')
+plot3(ant1.p_c_round(1,:),ant1.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'r')
+plot3(ant2.p_c_round(1,:),ant2.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'b')
+plot3(ant3.p_c_round(1,:),ant3.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'g')
 
 

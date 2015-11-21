@@ -21,6 +21,7 @@ classdef ant < handle
         straightMotionGain = 10; % Gain to keep driving straight
         directionsHeaded;       % For debugging
         omega; %For debugging
+        noiseGain = 10; %Noise to avoid getting stuck in a maze
     end
     
     methods
@@ -192,11 +193,15 @@ relArgDirections = []; % the relevant directions for each case
                     disp('other value')
             end
             
+            % Adding noise to the ant neighbouring positions
+            noisyListOfNearbyPot = listOfNearbyPot - obj.noiseGain*rand(size(listOfNearbyPot));
             
-            
+
             % Need to take into account multiple available
             % lowestSteps
-            lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
+%             lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
+            lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
+
             randomNumbers = rand(size(lowestStep));
             randomIndex = find(randomNumbers==min(randomNumbers));
             

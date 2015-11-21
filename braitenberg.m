@@ -61,28 +61,29 @@ axis([0 21 0 21])
 Z = X.*exp(-X.^2 - Y.^2);
 % Z = Z.*0;
 %Making edge walls of the plane
-Z(1,:) = 0.5;
-Z(size(Z,1),:) = 0.5;
-Z(:,1) = 0.5;
-Z(:,size(Z,2)) = 0.5;
+wallHeight = 1000;
+Z(1,:) = wallHeight;
+Z(size(Z,1),:) = wallHeight;
+Z(:,1) = wallHeight;
+Z(:,size(Z,2)) = wallHeight;
 
 
 % Making a wall
-Z(1:10,10) = 0.5;
-% Z(1:10,9) = 0.5;
-% Z(1:10,13) = 0.5;
-Z(1:10,14) = 0.5;
+Z(1:10,10) = wallHeight;
+% Z(1:10,9) = wallHeight;
+% Z(1:10,13) = wallHeight;
+Z(1:10,14) = wallHeight;
 
-% Z(15,1:10) = 0.5;
-Z(14,1:10) = 0.5;
-Z(12,10:15) = 0.5;
+% Z(15,1:10) = wallHeight;
+Z(14,1:10) = wallHeight;
+Z(12,10:15) = wallHeight;
 
 
-Z(14:15,15:20) = 0.5;
-Z(5,1:7) = 0.5;
-Z(18:21,6) = 0.5;
-Z(18:21,17) = 0.5;
-Z(18:21,13) = 0.5;
+Z(14:15,15:20) = wallHeight;
+Z(5,1:7) = wallHeight;
+Z(18:21,6) = wallHeight;
+Z(18:21,17) = wallHeight;
+Z(18:21,13) = wallHeight;
 % Z = Z-1000;
 % figure(2)
 % surface(X,Y,Z)
@@ -93,8 +94,8 @@ for i = 1:N
     
     
         ant1.antController(Z,i);
-        ant2.antController(Z,i);
-        ant3.antController(Z,i);
+%         ant2.antController(Z,i);
+%         ant3.antController(Z,i);
 
 %     r_ls1 = norm(p_s1-p_ls1);
 %     r_rs1 = norm(p_s2-p_ls1);
@@ -167,13 +168,13 @@ colormap(gray);
 surf(Z);hold on;
 view(2);
 plot3(ant1.p_c(1,:),ant1.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'r')
-plot3(ant2.p_c(1,:),ant2.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'b')
-plot3(ant3.p_c(1,:),ant3.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'g')
+% plot3(ant2.p_c(1,:),ant2.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'b')
+% plot3(ant3.p_c(1,:),ant3.p_c(2,:),1*ones(size(ant1.p_c(1,:),2),1),'g')
 subplot(1,2,2)
 surf(Z);hold on;
 view(2);
 plot3(ant1.p_c_round(1,:),ant1.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'r')
-plot3(ant2.p_c_round(1,:),ant2.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'b')
-plot3(ant3.p_c_round(1,:),ant3.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'g')
+% plot3(ant2.p_c_round(1,:),ant2.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'b')
+% plot3(ant3.p_c_round(1,:),ant3.p_c_round(2,:),1*ones(size(ant1.p_c(1,:),2),1),'g')
 
 

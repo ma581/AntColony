@@ -283,6 +283,8 @@ relArgDirections = []; % the relevant directions for each case
             obj.p_c = initPosition;
             obj.p_c_old = initPosition;
             obj.p_c_prev = initPosition;
+            obj.p_c_round = initPosition;
+
             %             obj.testValue(2) = 1;
         end
     end

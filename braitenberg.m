@@ -168,3 +168,15 @@ view(2);
 plot3(ant1.p_c(1,:),ant1.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')
 plot3(ant2.p_c(1,:),ant2.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'b')
 plot3(ant3.p_c(1,:),ant3.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'g')
+
+
+
+figure;
+colormap(gray);
+surf(Z);hold on;
+view(2);
+plot3(ant1.p_c_round(1,:),ant1.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')
+plot3(ant2.p_c_round(1,:),ant2.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'b')
+plot3(ant3.p_c_round(1,:),ant3.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'g')
+
+

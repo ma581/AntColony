@@ -24,12 +24,12 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 30000;
+N = 300000;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-ant1 = ant([5;2;pi/2]);
+ant1 = ant([12;11;pi/2]);
 ant2 = ant([13;8;pi/2]);
 ant3 = ant([20;20;pi/2]);
 
@@ -61,7 +61,7 @@ axis([0 21 0 21])
 Z = X.*exp(-X.^2 - Y.^2);
 % Z = Z.*0;
 %Making edge walls of the plane
-wallHeight = 1000;
+wallHeight = 15;
 Z(1,:) = wallHeight;
 Z(size(Z,1),:) = wallHeight;
 Z(:,1) = wallHeight;

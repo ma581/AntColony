@@ -10,14 +10,16 @@ classdef ant < handle
         rho = 10;       %light intensity to rotational speed constant
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
-        dt = 1e-3;      %time increment
+%         dt = 1e-3;      %time increment
+        dt = 1;
         d_s = 0.1;      %sensor distance
         
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
-        straightMotionGain = 2; % Gain to keep driving straight
+        straightMotionGain = 10; % Gain to keep driving straight
         directionsHeaded;       % For debugging
+        omega; %For debugging
     end
     
     methods
@@ -36,8 +38,8 @@ classdef ant < handle
             
             % Find discrete position (ie the index)
             if timestep>1
-                index_y = round(obj.p_c(2,timestep-1)); % Coordinates starting at (1,1)
-                index_x = round(obj.p_c(1,timestep-1));
+                index_y = floor(obj.p_c(2,timestep-1)); % Coordinates starting at (1,1)
+                index_x = floor(obj.p_c(1,timestep-1));
                 
                 %                 index_y = floor(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
                 %                 index_x = floor(obj.p_c(2,timestep-1))+1;
@@ -254,7 +256,8 @@ relArgDirections = []; % the relevant directions for each case
             % Combining to calculate
             omega_l = obj.randomMotionGain * rand_omega_l +  dec_omega_l + obj.straightMotionGain;
             omega_r = obj.randomMotionGain * rand_omega_r +  dec_omega_r + obj.straightMotionGain;
-            
+            obj.omega(1,timestep) = omega_l;
+            obj.omega(2,timestep) = omega_r;
             
             % Update ant position (Braitenberg code)
             if timestep>1
@@ -262,7 +265,9 @@ relArgDirections = []; % the relevant directions for each case
                 
                 
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
-                dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
+%                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
+                dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
+
                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
                 %                 obj.p_c(:,1) = obj.p_c_prev(:,1) + ...
                 %                     [v_c*cos(obj.p_c_prev(3,1));...

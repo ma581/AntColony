@@ -11,8 +11,8 @@ classdef ant < handle
         rho = 10;       %light intensity to rotational speed constant
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
-%         dt = 1e-3;      %time increment
-        dt = 1e-1;
+        %         dt = 1e-3;      %time increment
+        dt = 1;
         d_s = 0.1;      %sensor distance
         
         
@@ -31,32 +31,23 @@ classdef ant < handle
             % ant.p_c and ant.p_c_old
             % MA Kurien (ma581)
             
-%             flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
-                        flipped_surface = surface;
+            %           flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
+            flipped_surface = surface;
             
             % Random noise generation
             rand_omega_r = rand(1);
             rand_omega_l = rand(1);
             
+            %% POSITION
             % Find discrete position (ie the index)
             if timestep>1
                 index_y = floor(obj.p_c(2,timestep-1)); % Coordinates starting at (1,1)
                 index_x = floor(obj.p_c(1,timestep-1));
-                
-                %                 index_y = floor(obj.p_c(1,timestep-1))+1; % +1 to account for indexing starting at 1
-                %                 index_x = floor(obj.p_c(2,timestep-1))+1;
-                
-                %                 y = round(obj.p_c(1,1))+1; % +1 to account for indexing starting at 1
-                %                 x = round(obj.p_c(2,1))+1;
-                
             else
-                index_y = round(obj.p_c(2,timestep)); % Coordinates starting at (1,1)
-                index_x = round(obj.p_c(1,timestep));
-                %                 index_y = floor(obj.p_c(1,timestep))+1; % +1 to account for indexing starting at 1
-                %                 index_x = floor(obj.p_c(2,timestep))+1;
-                
+                index_y = floor(obj.p_c(2,timestep)); % Coordinates starting at (1,1)
+                index_x = floor(obj.p_c(1,timestep));
             end
-            %
+            
             %Reading in neighbours in 3x3 grid
             listOfNearbyPot = []; %init
             
@@ -82,10 +73,10 @@ classdef ant < handle
             
             
             %stepArgDirections = [3*pi/4, pi/2, pi/4, pi, 0, 5*pi/4,3*pi/2, 7*pi/4]; %Argand plot angles
-%             stepArgDirections = [5*pi/4, 3*pi/2, 7*pi/4,0, pi/4,3*pi/4, pi/2, pi/4]; %Flipped argand plot angles due to array numbering
-                        stepArgDirections = [5*pi/4, 3*pi/2, 7*pi/4,pi, 0,3*pi/4, pi/2, pi/4]; %Flipped argand plot angles due to array numbering
-
-relArgDirections = []; % the relevant directions for each case
+            %             stepArgDirections = [5*pi/4, 3*pi/2, 7*pi/4,0, pi/4,3*pi/4, pi/2, pi/4]; %Flipped argand plot angles due to array numbering
+            stepArgDirections = [5*pi/4, 3*pi/2, 7*pi/4, pi, 0, 3*pi/4, pi/2, pi/4]; %Flipped argand plot angles due to array numbering
+            
+            relArgDirections = []; % the relevant directions for each case
             
             switch s
                 case 1 %Case 1 (middle of 3x3 grid)
@@ -196,12 +187,12 @@ relArgDirections = []; % the relevant directions for each case
             % Adding noise to the ant neighbouring positions
             noisyListOfNearbyPot = listOfNearbyPot - obj.noiseGain*rand(size(listOfNearbyPot));
             
-
+            
             % Need to take into account multiple available
             % lowestSteps
-%             lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
+            %             lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
             lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
-
+            
             randomNumbers = rand(size(lowestStep));
             randomIndex = find(randomNumbers==min(randomNumbers));
             
@@ -219,16 +210,13 @@ relArgDirections = []; % the relevant directions for each case
             
             
             
-            % Goal oriented controller ************************
+            %% Goal oriented CONTROLLER 
             if timestep>1
                 difference = desiredArgDirection - obj.p_c(3,timestep-1);
             else
                 difference = desiredArgDirection - obj.p_c(3,timestep);
             end
-            %             difference = desiredArgDirection - obj.p_c(3,1);
-            
-            
-            
+                   
             if difference>0 % we need to spin left
                 if difference <= pi %considereing shortest angle to turn towards
                     % we need to spin left
@@ -255,9 +243,7 @@ relArgDirections = []; % the relevant directions for each case
                 end
                 
             end
-            % *********************************
-            
-            
+                  
             
             % Combining to calculate
             omega_l = obj.randomMotionGain * rand_omega_l +  dec_omega_l + obj.straightMotionGain;
@@ -265,31 +251,20 @@ relArgDirections = []; % the relevant directions for each case
             obj.omega(1,timestep) = omega_l;
             obj.omega(2,timestep) = omega_r;
             
-            % Update ant position (Braitenberg code)
+            %% UPDATE ant position (Braitenberg code)
             if timestep>1
                 timestep;
-                
-                
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
-%                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
-                dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
-
-                         
+                %                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
+                dphi = -(omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
                 
                 % To take into account that direction should always be
                 % 0<theta<2*pi
                 obj.p_c(3,timestep) = mod(obj.p_c(3,timestep),2*pi);
-%                 if obj.p_c(3,timestep)>= 2*pi
-%                     n = floor((obj.p_c(3,timestep))/2*pi);
-%                     obj.p_c(3,timestep) = obj.p_c(3,timestep) - n*(2*pi)
-%                 end
-                
+              
                 obj.p_c_round(:,timestep) = round(obj.p_c(:,timestep));
-                %                 obj.p_c(:,1) = obj.p_c_prev(:,1) + ...
-                %                     [v_c*cos(obj.p_c_prev(3,1));...
-                %                     v_c*sin(obj.p_c_prev(3,1));...
-                %                     dphi]*obj.dt;
+
             end
         end
         
@@ -299,7 +274,7 @@ relArgDirections = []; % the relevant directions for each case
             obj.p_c_old = initPosition;
             obj.p_c_prev = initPosition;
             obj.p_c_round = initPosition;
-
+            
             %             obj.testValue(2) = 1;
         end
     end

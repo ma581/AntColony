@@ -1,0 +1,15 @@
+clear
+close all
+
+n=4;
+[Z1,sc,sr,ec,er] = antmaze(n); %maze Dimension: (2n+3)
+start_pos = [sc,sr]; 
+
+ant1 = ant(sc,sr,
+
+for i = 1:N
+    
+    
+        ant1.antController(Z,i);
+        
+end

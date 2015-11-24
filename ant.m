@@ -12,13 +12,13 @@ classdef ant < handle
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
 %         dt = 1e-3;      %time increment
-        dt = 1;
+        dt = 1e-1;
         d_s = 0.1;      %sensor distance
         
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
-        straightMotionGain = 10; % Gain to keep driving straight
+        straightMotionGain = 0.5; % Gain to keep driving straight
         directionsHeaded;       % For debugging
         omega; %For debugging
         noiseGain = 10; %Noise to avoid getting stuck in a maze
@@ -274,7 +274,17 @@ relArgDirections = []; % the relevant directions for each case
 %                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
 
+                         
                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
+                
+                % To take into account that direction should always be
+                % 0<theta<2*pi
+                obj.p_c(3,timestep) = mod(obj.p_c(3,timestep),2*pi);
+%                 if obj.p_c(3,timestep)>= 2*pi
+%                     n = floor((obj.p_c(3,timestep))/2*pi);
+%                     obj.p_c(3,timestep) = obj.p_c(3,timestep) - n*(2*pi)
+%                 end
+                
                 obj.p_c_round(:,timestep) = round(obj.p_c(:,timestep));
                 %                 obj.p_c(:,1) = obj.p_c_prev(:,1) + ...
                 %                     [v_c*cos(obj.p_c_prev(3,1));...

@@ -24,12 +24,14 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 60000*5;
+N = 3000;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-ant1 = ant([14;3;pi]);
+ant1 = ant([5;2;pi/2]);
+ant2 = ant([13;8;pi/2]);
+ant3 = ant([20;5;pi/2]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -56,7 +58,8 @@ lli1 = line(0,0,'color',[0.7 0.7 0],'Marker','.','MarkerSize',30);  %light sourc
 axis([0 21 0 21])
 
 [X,Y] = meshgrid(-2:0.2:2,-2:0.2:2);
-Z = X.*exp(X.^2 - Y.^2);
+Z = X.*exp(-X.^2 - Y.^2);
+% Z = Z.*0;
 %Making edge walls of the plane
 Z(1,:) = 0.5;
 Z(size(Z,1),:) = 0.5;
@@ -65,9 +68,22 @@ Z(:,size(Z,2)) = 0.5;
 
 
 % Making a wall
-Z(:,12) = 0.5;
+Z(1:10,10) = 0.5;
+% Z(1:10,9) = 0.5;
+% Z(1:10,13) = 0.5;
+Z(1:10,14) = 0.5;
+
+% Z(15,1:10) = 0.5;
+Z(14,1:10) = 0.5;
+Z(12,10:15) = 0.5;
 
 
+Z(14:15,15:20) = 0.5;
+Z(5,1:7) = 0.5;
+Z(18:21,6) = 0.5;
+Z(18:21,17) = 0.5;
+Z(18:21,13) = 0.5;
+% Z = Z-1000;
 % figure(2)
 % surface(X,Y,Z)
 % view(3)
@@ -77,7 +93,9 @@ for i = 1:N
     
     
         ant1.antController(Z,i);
-        
+        ant2.antController(Z,i);
+        ant3.antController(Z,i);
+
 %     r_ls1 = norm(p_s1-p_ls1);
 %     r_rs1 = norm(p_s2-p_ls1);
 % 
@@ -101,46 +119,61 @@ end
 
 % p_c_old = p_c(:,1);
 t_next = 0;   %variable for timing of frame capture
-RepSpeed = 150; %replay speed
+RepSpeed = 10; %replay speed
 fps = 30;     %frames per second
 tic
-while toc < t(end)
-        
-    % Animation
-    if mod(toc,1/fps) > mod(toc,1/fps+ant1.dt)
+surf(Z);view(2);hold on;
+% while toc < t(end)
+%         
+%     % Animation
+%     if mod(toc,1/fps) > mod(toc,1/fps+ant1.dt)
+% 
+%         idx = floor(toc/ant1.dt*RepSpeed);
+%         if idx>N
+%             break
+%         end
+% 
+%         r_c1 = ant1.p_c(1:2,idx) + ant1.l_s/2*[-sin(ant1.p_c(3,idx));cos(ant1.p_c(3,idx))] - ant1.l_s/2*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))];
+%         r_c2 = r_c1 + ant1.l_s*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))];
+%         r_c3 = r_c2 + ant1.l_s*[sin(ant1.p_c(3,idx));-cos(ant1.p_c(3,idx))];
+%         r_c4 = r_c3 + ant1.l_s*[-cos(ant1.p_c(3,idx));-sin(ant1.p_c(3,idx))];
+%         r_w1 = [r_c1 + (r_c2-r_c1)/4,r_c1 + (r_c2-r_c1)*3/4];
+%         r_w2 = [r_c3 + (r_c4-r_c3)/4,r_c3 + (r_c4-r_c3)*3/4];
+% 
+%         p_s1 = ant1.p_c(1:2,idx) + ant1.l_s/2*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))] + ant1.d_s/2*[-sin(ant1.p_c(3,idx));cos(ant1.p_c(3,idx))];
+%         p_s2 = ant1.p_c(1:2,idx) + ant1.l_s/2*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))] + ant1.d_s/2*[sin(ant1.p_c(3,idx));-cos(ant1.p_c(3,idx))];
+% 
+%         p_ls1 = [0.5*sin(t(idx)/5)+1;0.5*cos(t(idx)/5)+1];
+%         
+%         plot([ant1.p_c(1,idx);ant1.p_c_old(1)],[ant1.p_c(2,idx);ant1.p_c_old(2)])
+% 
+%         set(ll,'xdata',[r_c1(1) r_c2(1)],'ydata',[r_c1(2) r_c2(2)])
+%         set(lf,'xdata',[r_c2(1) r_c3(1)],'ydata',[r_c2(2) r_c3(2)])
+%         set(lr,'xdata',[r_c3(1) r_c4(1)],'ydata',[r_c3(2) r_c4(2)])
+%         set(lb,'xdata',[r_c4(1) r_c1(1)],'ydata',[r_c4(2) r_c1(2)])
+%         set(lw1,'xdata',[r_w1(1,1) r_w1(1,2)],'ydata',[r_w1(2,1) r_w1(2,2)])
+%         set(lw2,'xdata',[r_w2(1,1) r_w2(1,2)],'ydata',[r_w2(2,1) r_w2(2,2)])
+%         set(ls1,'xdata',p_s1(1),'ydata',p_s1(2))
+%         set(ls2,'xdata',p_s2(1),'ydata',p_s2(2))
+%         set(lli1,'xdata',p_ls1(1),'ydata',p_ls1(2))
+% 
+%         drawnow
+%         ant1.p_c_old = ant1.p_c(:,idx);
+%     end
+% end
+% contour(Z); %To plot the surface as well
+figure; subplot(1,2,1)
+colormap(gray);
+surf(Z);hold on;
+view(2);
+plot3(ant1.p_c(1,:),ant1.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')
+plot3(ant2.p_c(1,:),ant2.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'b')
+plot3(ant3.p_c(1,:),ant3.p_c(2,:),100*ones(size(ant1.p_c(1,:),2),1),'g')
+subplot(1,2,2)
+surf(Z);hold on;
+view(2);
+plot3(ant1.p_c_round(1,:),ant1.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'r')
+plot3(ant2.p_c_round(1,:),ant2.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'b')
+plot3(ant3.p_c_round(1,:),ant3.p_c_round(2,:),100*ones(size(ant1.p_c(1,:),2),1),'g')
 
-        idx = floor(toc/ant1.dt*RepSpeed);
-        if idx>N
-            break
-        end
 
-        r_c1 = ant1.p_c(1:2,idx) + ant1.l_s/2*[-sin(ant1.p_c(3,idx));cos(ant1.p_c(3,idx))] - ant1.l_s/2*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))];
-        r_c2 = r_c1 + ant1.l_s*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))];
-        r_c3 = r_c2 + ant1.l_s*[sin(ant1.p_c(3,idx));-cos(ant1.p_c(3,idx))];
-        r_c4 = r_c3 + ant1.l_s*[-cos(ant1.p_c(3,idx));-sin(ant1.p_c(3,idx))];
-        r_w1 = [r_c1 + (r_c2-r_c1)/4,r_c1 + (r_c2-r_c1)*3/4];
-        r_w2 = [r_c3 + (r_c4-r_c3)/4,r_c3 + (r_c4-r_c3)*3/4];
-
-        p_s1 = ant1.p_c(1:2,idx) + ant1.l_s/2*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))] + ant1.d_s/2*[-sin(ant1.p_c(3,idx));cos(ant1.p_c(3,idx))];
-        p_s2 = ant1.p_c(1:2,idx) + ant1.l_s/2*[cos(ant1.p_c(3,idx));sin(ant1.p_c(3,idx))] + ant1.d_s/2*[sin(ant1.p_c(3,idx));-cos(ant1.p_c(3,idx))];
-
-        p_ls1 = [0.5*sin(t(idx)/5)+1;0.5*cos(t(idx)/5)+1];
-        
-        plot([ant1.p_c(1,idx);ant1.p_c_old(1)],[ant1.p_c(2,idx);ant1.p_c_old(2)])
-
-        set(ll,'xdata',[r_c1(1) r_c2(1)],'ydata',[r_c1(2) r_c2(2)])
-        set(lf,'xdata',[r_c2(1) r_c3(1)],'ydata',[r_c2(2) r_c3(2)])
-        set(lr,'xdata',[r_c3(1) r_c4(1)],'ydata',[r_c3(2) r_c4(2)])
-        set(lb,'xdata',[r_c4(1) r_c1(1)],'ydata',[r_c4(2) r_c1(2)])
-        set(lw1,'xdata',[r_w1(1,1) r_w1(1,2)],'ydata',[r_w1(2,1) r_w1(2,2)])
-        set(lw2,'xdata',[r_w2(1,1) r_w2(1,2)],'ydata',[r_w2(2,1) r_w2(2,2)])
-        set(ls1,'xdata',p_s1(1),'ydata',p_s1(2))
-        set(ls2,'xdata',p_s2(1),'ydata',p_s2(2))
-        set(lli1,'xdata',p_ls1(1),'ydata',p_ls1(2))
-
-        drawnow
-        ant1.p_c_old = ant1.p_c(:,idx);
-    end
-end
-contour(Z); %To plot the surface as well
-grid on;

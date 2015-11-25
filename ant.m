@@ -14,15 +14,15 @@ classdef ant < handle
         %         dt = 1e-3;      %time increment
         dt = 1e-3;
         d_s = 0.1;      %sensor distance
-        
+        diff;           %difference between desired and current orientation
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
-        straightMotionGain = 1; % Gain to keep driving straight
+        straightMotionGain = 1e-1; % Gain to keep driving straight
         directionsHeaded;       % For debugging
         omega; %For debugging
         noiseGain = 10; %Noise to avoid getting stuck in a maze
-        wheelGain = 1;
+        wheelGain = 0.00000001;
     end
     
     methods
@@ -204,15 +204,12 @@ classdef ant < handle
             
             singleLowestStep = lowestStep(randomIndex); %Picks a random direction
             
-            
             if timestep>1
-                        % Adding one step memory for the ant
+            % Adding one step memory for the ant
                 if noisyListOfNearbyPot(obj.directionsHeaded(timestep-1))<500
                     lowestStep = obj.directionsHeaded(timestep-1); %keep going in the same direction
-
                 else
                      lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
-
                 end
                 singleLowestStep = lowestStep;
             end
@@ -222,6 +219,8 @@ classdef ant < handle
             %                     desiredArgDirection = relArgDirections(singleLowestStep);
             %                     fprintf('Heading to direction = %s.\n',singleLowestStep);
             desiredArgDirection = stepArgDirections(singleLowestStep);
+            
+            
             
             TF = isempty(desiredArgDirection);
             if TF==1
@@ -234,8 +233,11 @@ classdef ant < handle
             %% Goal oriented CONTROLLER 
             if timestep>1
                 difference = desiredArgDirection - obj.p_c(3,timestep-1);
+                obj.diff(1,timestep) = difference;
             else
                 difference = desiredArgDirection - obj.p_c(3,timestep);
+                obj.diff(1,timestep) = difference;
+
             end
                    
             if difference>0 % we need to spin left
@@ -265,10 +267,18 @@ classdef ant < handle
                 
             end
                   
+            % Driving straight vs turning
+                if norm(difference)>pi/100
+                    drivingStraight = 0; %we are turning
+                else
+                    drivingStraight = 1; %driving straight
+                end
+                    
+            
             
             % Combining to calculate
-            omega_l = obj.randomMotionGain * rand_omega_l +  obj.wheelGain * dec_omega_l + obj.straightMotionGain;
-            omega_r = obj.randomMotionGain * rand_omega_r +  obj.wheelGain * dec_omega_r + obj.straightMotionGain;
+            omega_l = obj.randomMotionGain * rand_omega_l +  obj.wheelGain * dec_omega_l + obj.straightMotionGain * drivingStraight;
+            omega_r = obj.randomMotionGain * rand_omega_r +  obj.wheelGain * dec_omega_r + obj.straightMotionGain * drivingStraight;
             obj.omega(1,timestep) = omega_l;
             obj.omega(2,timestep) = omega_r;
             

@@ -10,7 +10,7 @@ sr = 9; sc = 5;
 start_pos = [sc,sr]; 
 
 ant1 = ant([sc;sr;0]);
-N = 30000*2;
+N = 30000*10;
 for i = 1:N
     
     

@@ -22,7 +22,7 @@ classdef ant < handle
         directionsHeaded;       % For debugging
         omega; %For debugging
         noiseGain = 10; %Noise to avoid getting stuck in a maze
-        wheelGain = 0.5;
+        wheelGain = 1;
     end
     
     methods
@@ -32,8 +32,8 @@ classdef ant < handle
             % ant.p_c and ant.p_c_old
             % MA Kurien (ma581)
             
-                      flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
-%             flipped_surface = surface;
+%                       flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
+            flipped_surface = surface;
             
             % Random noise generation
             rand_omega_r = rand(1);

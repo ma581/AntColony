@@ -35,7 +35,8 @@ Z1 = cell2mat(Z1);
 sr = 9; sc = 5;
 start_pos = [sc,sr]; 
 
-ant1 = ant([sc;sr;pi]);
+% ant1 = ant([sc;sr;pi]);
+ant1 = ant([5.4;4.4;pi]);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])

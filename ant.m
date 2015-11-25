@@ -12,16 +12,17 @@ classdef ant < handle
         l_s = 0.1;      %shaft length vehicle
         r_w = 0.02;     %radius wheel
         %         dt = 1e-3;      %time increment
-        dt = 1;
+        dt = 1e-3;
         d_s = 0.1;      %sensor distance
         
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
-        straightMotionGain = 0.5; % Gain to keep driving straight
+        straightMotionGain = 1; % Gain to keep driving straight
         directionsHeaded;       % For debugging
         omega; %For debugging
         noiseGain = 10; %Noise to avoid getting stuck in a maze
+        wheelGain = 0.5;
     end
     
     methods
@@ -31,8 +32,8 @@ classdef ant < handle
             % ant.p_c and ant.p_c_old
             % MA Kurien (ma581)
             
-            %           flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
-            flipped_surface = surface;
+                      flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
+%             flipped_surface = surface;
             
             % Random noise generation
             rand_omega_r = rand(1);
@@ -88,6 +89,10 @@ classdef ant < handle
                     end
                     
                     listOfNearbyPot(5) = []; %ignoring current position
+                    listOfNearbyPot(1) = 999; %Moving only in a cross now
+                    listOfNearbyPot(3) = 999;
+                    listOfNearbyPot(6) = 999;
+                    listOfNearbyPot(8) = 999;
                     relArgDirections = stepArgDirections; %relevant
                     
                 case 2 %Case 2 (edge of 3x3 grid)
@@ -188,15 +193,31 @@ classdef ant < handle
             noisyListOfNearbyPot = listOfNearbyPot - obj.noiseGain*rand(size(listOfNearbyPot));
             
             
+
             % Need to take into account multiple available
             % lowestSteps
-            %             lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
+%                         lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
             lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
             
             randomNumbers = rand(size(lowestStep));
             randomIndex = find(randomNumbers==min(randomNumbers));
             
             singleLowestStep = lowestStep(randomIndex); %Picks a random direction
+            
+            
+            if timestep>1
+                        % Adding one step memory for the ant
+                if noisyListOfNearbyPot(obj.directionsHeaded(timestep-1))<500
+                    lowestStep = obj.directionsHeaded(timestep-1); %keep going in the same direction
+
+                else
+                     lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
+
+                end
+                singleLowestStep = lowestStep;
+            end
+            
+            
             obj.directionsHeaded(1,timestep) = singleLowestStep;
             %                     desiredArgDirection = relArgDirections(singleLowestStep);
             %                     fprintf('Heading to direction = %s.\n',singleLowestStep);
@@ -246,8 +267,8 @@ classdef ant < handle
                   
             
             % Combining to calculate
-            omega_l = obj.randomMotionGain * rand_omega_l +  dec_omega_l + obj.straightMotionGain;
-            omega_r = obj.randomMotionGain * rand_omega_r +  dec_omega_r + obj.straightMotionGain;
+            omega_l = obj.randomMotionGain * rand_omega_l +  obj.wheelGain * dec_omega_l + obj.straightMotionGain;
+            omega_r = obj.randomMotionGain * rand_omega_r +  obj.wheelGain * dec_omega_r + obj.straightMotionGain;
             obj.omega(1,timestep) = omega_l;
             obj.omega(2,timestep) = omega_r;
             
@@ -256,8 +277,9 @@ classdef ant < handle
                 timestep;
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
                 %                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
-                dphi = -(omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
-                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
+                dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
+                phi = obj.p_c(3,timestep-1) + dphi;
+                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));phi]*obj.dt;
                 
                 % To take into account that direction should always be
                 % 0<theta<2*pi

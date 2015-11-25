@@ -12,7 +12,7 @@ classdef ant < handle
         l_s = 0.001;      %shaft length vehicle
         r_w = 0.05;     %radius wheel
         %         dt = 1e-3;      %time increment
-        dt = 5;
+        dt = 3;
         d_s = 0.1;      %sensor distance
         diff;           %difference between desired and current orientation
         

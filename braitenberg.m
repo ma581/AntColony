@@ -24,15 +24,17 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 30000;
+N = 3000;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-Z1 = load('Zsurface.mat');
-Z1 = struct2cell(Z1);
-Z1 = cell2mat(Z1);
-sr = 9; sc = 5;
+% Z1 = load('Zsurface.mat');
+% Z1 = struct2cell(Z1);
+% Z1 = cell2mat(Z1);
+% sr = 9; sc = 5;
+
+[Z1,sc,sr,ec,er] = antmaze(4);
 start_pos = [sc,sr]; 
 
 % ant1 = ant([sc;sr;pi]);
@@ -131,7 +133,7 @@ end
 
 % p_c_old = p_c(:,1);
 t_next = 0;   %variable for timing of frame capture
-RepSpeed = 10; %replay speed
+RepSpeed = 100; %replay speed
 fps = 30;     %frames per second
 tic
 % surf(Z);view(2);hold on;

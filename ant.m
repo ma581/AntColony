@@ -14,15 +14,17 @@ classdef ant < handle
         %         dt = 1e-3;      %time increment
         dt = 3;
         d_s = 0.1;      %sensor distance
-        diff;           %difference between desired and current orientation
+        
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
         straightMotionGain = 1; % Gain to keep driving straight
         directionsHeaded;       % For debugging
-        omega; %For debugging
-        noiseGain = 10; %Noise to avoid getting stuck in a maze
+        omega;                  %For debugging
+        noiseGain = 10;         %Noise to avoid getting stuck in a maze
         wheelGain = 0.1;
+        diff;                   %difference between desired and current orientation
+        lp;                     %Local pheremone matrix
     end
     
     methods
@@ -311,12 +313,13 @@ classdef ant < handle
             end
         end
         
-        function obj = ant(initPosition)
+        function obj = ant(initPosition,wxy)
             % class constructor
             obj.p_c = initPosition;
             obj.p_c_old = initPosition;
             obj.p_c_prev = initPosition;
             obj.p_c_round = initPosition;
+            obj.lp = zeros(wxy,wxy);
             
             %             obj.testValue(2) = 1;
         end

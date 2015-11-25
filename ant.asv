@@ -206,16 +206,12 @@ classdef ant < handle
             
             if timestep>1
                 
-%                 if dot(floor(obj.p_c(1:2,timestep-2)),floor(obj.p_c(1:2,timestep-1)))== 1
-%                     positionChange = 0;
-%                 else
-%                     positionChange = 1;
-%                 end
+                if [floor(obj.p_c(1:2,timestep-2))
                 
             % Adding one step memory for the ant
             
             
-                if noisyListOfNearbyPot(obj.directionsHeaded(timestep-1))<500 %&& positionChange == 0
+                if noisyListOfNearbyPot(obj.directionsHeaded(timestep-1))<500 && 
                     
                         lowestStep = obj.directionsHeaded(timestep-1); %keep going in the same direction
                     

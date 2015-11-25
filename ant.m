@@ -18,11 +18,11 @@ classdef ant < handle
         
         % Additional properties
         randomMotionGain = 0;   % Gain for random motion
-        straightMotionGain = 1e-1; % Gain to keep driving straight
+        straightMotionGain = 1; % Gain to keep driving straight
         directionsHeaded;       % For debugging
         omega; %For debugging
         noiseGain = 10; %Noise to avoid getting stuck in a maze
-        wheelGain = 0.00000001;
+        wheelGain = 0.1;
     end
     
     methods
@@ -288,8 +288,8 @@ classdef ant < handle
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
                 %                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
-                phi = obj.p_c(3,timestep-1) + dphi;
-                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));phi]*obj.dt;
+%                 phi = obj.p_c(3,timestep-1) + dphi;
+                obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
                 
                 % To take into account that direction should always be
                 % 0<theta<2*pi

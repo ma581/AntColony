@@ -25,6 +25,7 @@ classdef ant < handle
         wheelGain = 0.1;
         diff;                   %difference between desired and current orientation
         lp;                     %Local pheremone matrix
+        wallHeight = 500;       %deciding available routes
     end
     
     methods
@@ -34,7 +35,7 @@ classdef ant < handle
             % ant.p_c and ant.p_c_old
             % MA Kurien (ma581)
             
-%                       flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
+            %                       flipped_surface = flipud(surface); %This is because when plotting, the flipped_surface is flipped (array indexing)
             flipped_surface = surface;
             
             % Random noise generation
@@ -195,36 +196,63 @@ classdef ant < handle
             noisyListOfNearbyPot = listOfNearbyPot - obj.noiseGain*rand(size(listOfNearbyPot));
             
             
-
+            
             % Need to take into account multiple available
             % lowestSteps
-%                         lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
-            lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
+            %                         lowestStep = find(listOfNearbyPot == min(listOfNearbyPot)); %index
+            optionalDirections = find(noisyListOfNearbyPot <= obj.wallHeight);
             
-            randomNumbers = rand(size(lowestStep));
-            randomIndex = find(randomNumbers==min(randomNumbers));
-            
-            singleLowestStep = lowestStep(randomIndex); %Picks a random direction
-            
-            if timestep>1
+            if size(optionalDirections)== 1
+                %Go back
+                lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
+                randomNumbers = rand(size(lowestStep));
+                randomIndex = find(randomNumbers==min(randomNumbers));
                 
-%                 if dot(floor(obj.p_c(1:2,timestep-2)),floor(obj.p_c(1:2,timestep-1)))== 1
-%                     positionChange = 0;
-%                 else
-%                     positionChange = 1;
-%                 end
+                singleLowestStep = lowestStep(randomIndex); %Picks a random direction
                 
-            % Adding one step memory for the ant
-            
-            
-                if noisyListOfNearbyPot(obj.directionsHeaded(timestep-1))<500 %&& positionChange == 0
-                    
-                        lowestStep = obj.directionsHeaded(timestep-1); %keep going in the same direction
-                    
+            else
+                % Don't go back
+                if timestep>1
+                    if obj.directionsHeaded(timestep-1) == 2
+                        backDirection = 7;
+                    elseif obj.directionsHeaded(timestep-1) == 7
+                        backDirection = 2;
+                    elseif obj.directionsHeaded(timestep-1) == 5
+                        backDirection = 4; 
+                        elseif obj.directionsHeaded(timestep-1) == 4
+                        backDirection = 5;
+                    end
                 else
-                     lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
+                    backDirection = find(noisyListOfNearbyPot == max(noisyListOfNearbyPot));
+                end
+               
+                
+                noisyListOfNearbyPot (backDirection) = obj.wallHeight;
+                lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
+                randomNumbers = rand(size(lowestStep));
+                randomIndex = find(randomNumbers==min(randomNumbers));
+                
+                singleLowestStep = lowestStep(randomIndex); %Picks a random direction
+            end
+            
+            
+            
+            if timestep>2
+                
+                if floor(obj.p_c(1:2,timestep-2))- floor(obj.p_c(1:2,timestep-1))== [0,0]'
+                    positionChange = 0;
+                else
+                    positionChange = 1;
+                end
+                
+                % Adding one step memory for the ant
+                if noisyListOfNearbyPot(obj.directionsHeaded(timestep-1))<500 && positionChange == 0
+                    lowestStep = obj.directionsHeaded(timestep-1); %keep going in the same direction
+                else
+                    lowestStep = find(noisyListOfNearbyPot == min(noisyListOfNearbyPot)); %index
                 end
                 singleLowestStep = lowestStep;
+                
             end
             
             
@@ -243,16 +271,16 @@ classdef ant < handle
             
             
             
-            %% Goal oriented CONTROLLER 
+            %% Goal oriented CONTROLLER
             if timestep>1
                 difference = desiredArgDirection - obj.p_c(3,timestep-1);
                 obj.diff(1,timestep) = difference;
             else
                 difference = desiredArgDirection - obj.p_c(3,timestep);
                 obj.diff(1,timestep) = difference;
-
+                
             end
-                   
+            
             if difference>0 % we need to spin left
                 if difference <= pi %considereing shortest angle to turn towards
                     % we need to spin left
@@ -279,14 +307,14 @@ classdef ant < handle
                 end
                 
             end
-                  
+            
             % Driving straight vs turning
-                if norm(difference)>pi/100
-                    drivingStraight = 0; %we are turning
-                else
-                    drivingStraight = 1; %driving straight
-                end
-                    
+            if norm(difference)>pi/100
+                drivingStraight = 0; %we are turning
+            else
+                drivingStraight = 1; %driving straight
+            end
+            
             
             
             % Combining to calculate
@@ -301,21 +329,21 @@ classdef ant < handle
                 v_c = (omega_l*obj.r_w + omega_r*obj.r_w)/2; % Velocity
                 %                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/2/(obj.l_s/2); %Orientation. Remove minus sign to switch polarity
                 dphi = (omega_r*obj.r_w - omega_l*obj.r_w)/(obj.l_s); %Orientation. Remove minus sign to switch polarity
-%                 phi = obj.p_c(3,timestep-1) + dphi;
+                %                 phi = obj.p_c(3,timestep-1) + dphi;
                 obj.p_c(:,timestep) = obj.p_c(:,timestep-1) + [v_c*cos(obj.p_c(3,timestep-1));v_c*sin(obj.p_c(3,timestep-1));dphi]*obj.dt;
                 
                 % To take into account that direction should always be
                 % 0<theta<2*pi
                 obj.p_c(3,timestep) = mod(obj.p_c(3,timestep),2*pi);
-              
-                obj.p_c_round(:,timestep) = round(obj.p_c(:,timestep));
-
+                
+                obj.p_c_round(:,timestep) = floor(obj.p_c(:,timestep));
+                
             end
         end
         
         function obj = ant(initPosition,wxy)
             % class constructor
-            obj.p_c = initPosition;
+            obj.p_c = initPosition + [0.5 0.5 0]';
             obj.p_c_old = initPosition;
             obj.p_c_prev = initPosition;
             obj.p_c_round = initPosition;

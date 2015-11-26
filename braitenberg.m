@@ -24,21 +24,21 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 3000;
+N = 500;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
 % p_c_old = p_c;      %save old state for trajectory
-% Z1 = load('Zsurface.mat');
-% Z1 = struct2cell(Z1);
-% Z1 = cell2mat(Z1);
-% sr = 9; sc = 5;
+Z1 = load('Zsurface.mat');
+Z1 = struct2cell(Z1);
+Z1 = cell2mat(Z1);
+sr = 9; sc = 5;
 
-[Z1,sc,sr,ec,er] = antmaze(4);
+% [Z1,sc,sr,ec,er] = antmaze(4);
 start_pos = [sc,sr]; 
 
 % ant1 = ant([sc;sr;pi]);
-ant1 = ant([5.4;4.4;pi]);
+ant1 = ant([5.4;4.4;pi],11);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])

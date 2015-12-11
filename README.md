@@ -1,7 +1,9 @@
 # AntColony
 4M20
 
-The ant class created contains the properties of the braitenberg vehicle and additional properties such as the local pheremon matrix (see additional properties under properties to see all). It also contains two functions - the class initializer and the controller. 
+The primary objective of the ant class is to control the braitenberg vehicle behaviour such that it behaves like an ant - moving randomly, observing its surroundings, obstacle avoidance and heading with a 'sense of smell' towards the 'goal' or 'food'. Each 'ant braitenberg vehicle' should behave independently. 
+
+The ant class created contains the properties of the braitenberg vehicle and additional properties such as the local pheremone matrix (see additional properties under properties to see all). It also contains two functions - the class initializer and the controller. 
 
 
 

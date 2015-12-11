@@ -24,7 +24,7 @@ clc
 % rho = 10;       %light intensity to rotational speed constant
 % dt = 1e-3;      %time increment
 % N = 31400;
-N = 500;
+N = 8000;
 
 %% Initialisation
 % p_c = [0.6;0.6;pi/2];  %initial robot position and orientation
@@ -38,7 +38,7 @@ sr = 9; sc = 5;
 start_pos = [sc,sr]; 
 
 % ant1 = ant([sc;sr;pi]);
-ant1 = ant([5.4;4.4;pi],11);
+ant1 = ant([5;4;pi],11);
 
 figure(1)
 % plot([p_c(1);p_c_old(1)],[p_c(2);p_c_old(2)])
@@ -133,10 +133,10 @@ end
 
 % p_c_old = p_c(:,1);
 t_next = 0;   %variable for timing of frame capture
-RepSpeed = 100; %replay speed
+RepSpeed = 1; %replay speed
 fps = 30;     %frames per second
 tic
-% surf(Z);view(2);hold on;
+% surf(Z1);view(2);hold on;
 %  while toc < t(end)
 %         
 %     % Animation

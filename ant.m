@@ -26,6 +26,7 @@ classdef ant < handle
         diff;                   %difference between desired and current orientation
         lp;                     %Local pheremone matrix
         wallHeight = 500;       %deciding available routes
+        stepsTravelled;
     end
     
     methods
@@ -51,6 +52,8 @@ classdef ant < handle
                 index_y = floor(obj.p_c(2,timestep)); % Coordinates starting at (1,1)
                 index_x = floor(obj.p_c(1,timestep));
             end
+            
+           
             
             %Reading in neighbours in 3x3 grid
             listOfNearbyPot = []; %init
@@ -243,6 +246,7 @@ classdef ant < handle
                     positionChange = 0;
                 else
                     positionChange = 1;
+                    obj.stepsTravelled = obj.stepsTravelled + 1 ;
                 end
                 
                 % Adding one step memory for the ant
@@ -348,7 +352,7 @@ classdef ant < handle
             obj.p_c_prev = initPosition;
             obj.p_c_round = initPosition;
             obj.lp = zeros(wxy,wxy);
-            
+            obj.stepsTravelled = 0;
             %             obj.testValue(2) = 1;
         end
     end

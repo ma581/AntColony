@@ -6,10 +6,10 @@ The ant class created contains the properties of the braitenberg vehicle and add
 
 
 
-*** PROPERTIES ****
+*** PROPERTIES **** //
 The key properties that enable the 'ant braitenberg vehicle' to perform as required are that it updates its properties to keep a historic record of its position over tiume. In addition, it has features such as the gain for proportional control, variable noise to enable random movements and variables that enable each ant object to decide which direction it is going to head to next in each time step. 
 
-*** METHODS *****
+*** METHODS *****//
 The initializer enables the 'ant braitenberg vehicle' eg ant1 = ant([x,y,theta],pher) object to be initialized at a starting position in the maze. 
 
 The controller eg ant1.controller(Surface,time) takes in the potential surface and time step to calculate its final position at the end of the time step. 
